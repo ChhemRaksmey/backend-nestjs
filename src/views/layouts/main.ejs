@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <%- include('../partials/htmlstyles') %>
+    </head>
+
+    <body data-sidebar="dark" data-bs-theme="dark">
+
+        <div id="layout-wrapper" class="font-size-12">
+            
+            <%- include('../partials/navigation') %>
+            <%- include('../partials/sidebar') %>
+            
+            <div class="main-content">
+                <div class="page-content">
+                    <div class="container-fluid">
+                        <%- body %>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="right-bar"></div>
+        
+        <div class="rightbar-overlay"></div>
+
+        <%- include('../partials/htmlscripts') %>
+
+    </body>
+
+</html>

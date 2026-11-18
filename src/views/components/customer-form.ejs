@@ -1,0 +1,18 @@
+<div class="form-grid">
+  <label class="field">
+    <span>Full name <span class="required">*</span></span>
+    <input type="text" name="name" value="<%= customer.name || '' %>" required minlength="2" maxlength="100" placeholder="e.g. Alex Morgan">
+  </label>
+  <label class="field">
+    <span>Email address <span class="required">*</span></span>
+    <input type="email" name="email" value="<%= customer.email || '' %>" required maxlength="255" placeholder="alex@example.com">
+  </label>
+  <label class="field">
+    <span>Phone number</span>
+    <input type="tel" name="phone" value="<%= customer.phone || '' %>" maxlength="30" placeholder="+1 555 0100">
+  </label>
+</div>
+<div class="form-actions">
+  <a class="button button-quiet" href="/customers">Cancel</a>
+  <button class="button button-primary" type="submit"><%= isEdit ? 'Save changes' : 'Create customer' %></button>
+</div>

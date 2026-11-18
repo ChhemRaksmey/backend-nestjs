@@ -1,0 +1,177 @@
+
+<%
+  const notices = {
+    created: 'Customer added successfully.',
+    updated: 'Customer updated successfully.',
+    deleted: 'Customer deleted successfully.'
+  };
+  const notice = notices[queryNotice];
+%>
+
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">DIRECTORY</p>
+    <h1>Customers</h1>
+    <p class="muted">Manage the people connected to your business.</p>
+  </div>
+  <a class="button button-primary" href="/customers/new">＋ Add customer</a>
+</section>
+
+<% if (notice) { %>
+  <div class="alert alert-success" role="status"><%= notice %></div>
+<% } %>
+
+<section class="panel">
+
+  <div class="panel-heading">
+    <div>
+      <h2>All customers</h2>
+      <p><%= total %> <%= total === 1 ? 'record' : 'records' %></p>
+    </div>
+  </div>
+
+  <% if (total) { %>
+
+    <div class="table-wrap">
+      <table>
+
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Phone</th><th>Added</th><th class="actions-heading">Actions</th></tr>
+        </thead>
+
+        <tbody>
+          <% customers.forEach((customer) => { %>
+            <tr>
+              <td><span class="avatar"><%= customer.name.charAt(0).toUpperCase() %></span><strong><%= customer.name %></strong></td>
+              <td><a class="email-link" href="mailto:<%= customer.email %>"><%= customer.email %></a></td>
+              <td class="muted"><%= customer.phone || '—' %></td>
+              <td class="muted"><%= formatDate(customer.createdAt) %></td>
+              <td class="row-actions">
+                <a class="button button-small button-quiet" href="/customers/<%= customer.id %>/edit">Edit</a>
+                <form action="/customers/<%= customer.id %>/delete" method="post" data-confirm="Delete <%= customer.name %>?">
+                  <button class="button button-small button-danger" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+        
+      </table>
+    </div>
+
+    <div class="pagination-bar">
+      <p class="pagination-summary">
+        Showing <%= (page - 1) * pageSize + 1 %>–<%= Math.min(page * pageSize, total) %> of <%= total %>
+      </p>
+      <% if (totalPages > 1) { %>
+        <nav class="pagination" aria-label="Customer pages">
+          <% if (page > 1) { %>
+            <a class="page-link" href="?page=<%= page - 1 %>" aria-label="Previous page">Previous</a>
+          <% } else { %>
+            <span class="page-link disabled" aria-disabled="true">Previous</span>
+          <% } %>
+          <% pages.forEach((pageNumber) => { %>
+            <% if (pageNumber === page) { %>
+              <span class="page-link current" aria-current="page"><%= pageNumber %></span>
+            <% } else { %>
+              <a class="page-link" href="?page=<%= pageNumber %>"><%= pageNumber %></a>
+            <% } %>
+          <% }) %>
+          <% if (page < totalPages) { %>
+            <a class="page-link" href="?page=<%= page + 1 %>" aria-label="Next page">Next</a>
+          <% } else { %>
+            <span class="page-link disabled" aria-disabled="true">Next</span>
+          <% } %>
+        </nav>
+      <% } %>
+    </div>
+
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">◎</div>
+      <h3>No customers yet</h3>
+      <p>Add your first customer to get started.</p>
+      <a class="button button-primary" href="/customers/new">Add a customer</a>
+    </div>
+  <% } %>
+
+</section>
+
+
+<section>
+  <div class="card">
+
+      <div class="card-body border-bottom">
+        <div class="d-flex align-items-center">
+          <h5 class="mb-0 card-title flex-grow-1">System Modules</h5>
+          <div class="flex-shrink-0">
+            <a class="btn btn-soft-primary" href="#!"><i class="fas fa-plus me-2"></i>Add New</a>
+            <a class="btn btn-soft-light"   href="#!"><i class="fas fa-sync-alt"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body border-bottom">
+        <div class="row g-3 justify-content-center">
+          <div class="col-lg-6">
+            <input class="form-control" placeholder="Search for ..." />
+          </div>
+          <div class="col-lg-2">
+            <select class="form-select">
+              <option value="">select status</option>
+              <option value="E">Enable</option>
+              <option value="D">Disabled</option>
+            </select>
+          </div>
+          <div class="col-lg-2">
+            <button class="btn btn-soft-secondary w-100" onclick="filterData();" type="button">
+              <i class="mdi mdi-filter-outline align-middle"></i>Filter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <% if (total) { %>
+        <table class="table align-middle dt-responsive nowrap w-100 table-check" id="job-list">
+          <thead>
+            <tr>
+              <th scope="col" class="font-size-12 py-2 col-2">Short Name</th>
+              <th scope="col" class="font-size-12 py-2 col-8">Full Name</th>
+              <th scope="col" class="font-size-12 py-2 col-1 text-center">Status</th>
+              <th scope="col" class="font-size-12 py-2 col-1 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-size-12 py-1">SYS</td>
+              <td class="font-size-12 py-1">CORE SYSTEM</td>
+              <td class="font-size-12 py-1 text-center"><span class="badge bg-primary">Active</span></td>
+              <td class="font-size-12 py-1 text-center">
+                <div class="btn-group">
+                  <a aria-expanded="false" aria-haspopup="true" class="btn-sm btn btn-soft-primary" data-bs-toggle="dropdown" role="button">
+                    <i class="mdi mdi-file-cog-outline"></i>
+                  </a>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item font-size-11" href="#">View</a>
+                    <a class="dropdown-item font-size-11" href="#">Edit</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item font-size-11" href="#">Authorize</a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <% } else { %>
+          <div class="empty-state">
+            <div class="empty-icon">◎</div>
+            <h3>No customers yet</h3>
+            <p>Add your first customer to get started.</p>
+            <a class="button button-primary" href="/customers/new">Add a customer</a>
+          </div>
+        <% } %>
+      </div>
+
+  </div>
+</section>
