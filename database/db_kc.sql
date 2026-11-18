@@ -88,7 +88,9 @@ BEGIN
 	DROP VIEW IF EXISTS vw_sys_applications;
 	CREATE OR REPLACE VIEW vw_sys_applications AS
 	SELECT
-		COALESCE(a.json_data->>'c1', '') AS id_module,
+		m.id_module,
+		m.full_name AS module_full_name,
+
 		a.recid                          AS id_application,
 		COALESCE(a.json_data->>'c2', '') AS full_name,
 		CASE a.json_data->>'c3'

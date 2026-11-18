@@ -59,32 +59,7 @@
       </table>
     </div>
 
-    <div class="pagination-bar">
-      <p class="pagination-summary">
-        Showing <%= (page - 1) * pageSize + 1 %>–<%= Math.min(page * pageSize, total) %> of <%= total %>
-      </p>
-      <% if (totalPages > 1) { %>
-        <nav class="pagination" aria-label="Customer pages">
-          <% if (page > 1) { %>
-            <a class="page-link" href="?page=<%= page - 1 %>" aria-label="Previous page">Previous</a>
-          <% } else { %>
-            <span class="page-link disabled" aria-disabled="true">Previous</span>
-          <% } %>
-          <% pages.forEach((pageNumber) => { %>
-            <% if (pageNumber === page) { %>
-              <span class="page-link current" aria-current="page"><%= pageNumber %></span>
-            <% } else { %>
-              <a class="page-link" href="?page=<%= pageNumber %>"><%= pageNumber %></a>
-            <% } %>
-          <% }) %>
-          <% if (page < totalPages) { %>
-            <a class="page-link" href="?page=<%= page + 1 %>" aria-label="Next page">Next</a>
-          <% } else { %>
-            <span class="page-link disabled" aria-disabled="true">Next</span>
-          <% } %>
-        </nav>
-      <% } %>
-    </div>
+    <%- include('../components/pagination') %>
 
   <% } else { %>
     <div class="empty-state">

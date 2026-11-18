@@ -1,0 +1,13 @@
+<% if (msg) { %>
+  <div class="alert alert-info" role="status"><%= msg %></div>
+<% } %>
+
+<% if (errors && Object.keys(errors).length) { %>
+  <div class="alert alert-danger" role="alert">
+    <ul class="mb-0">
+      <% Object.values(errors).flat().forEach((message) => { %>
+        <li><%= message %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
