@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfig } from './config/database.config';
 import { ViewLocalsMiddleware } from './middleware/view-locals.middleware';
 
-import { entities, controllers, middlewareController, providers } from './config/app';
+import { entities, controllers, providers } from './config/app';
 
 @Module({
   imports: [
@@ -17,6 +17,6 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer
       .apply(ViewLocalsMiddleware)
-      .forRoutes(...middlewareController);
+      .forRoutes(...controllers);
   }
 }

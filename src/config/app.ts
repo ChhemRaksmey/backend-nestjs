@@ -19,28 +19,24 @@ import { SysEBLookUpView } from '../models/sys_eblookup.entity';
 import { SysEBLookUpService } from '../services/sys_eblookup.service';
 import { SysEBLookUpController } from '../controllers/sys_eblookup.controller';
 
+import { SysPrivilegesView } from '../models/sys_privileges.entity';
+import { SysPrivilegesService } from '../services/sys_privileges.service';
+import { SysPrivilegesController } from '../controllers/sys_privileges.controller';
 
 
 export const entities = [
     Customer,
-    mdSysModules, SysApplicationsView, SysEBLookUpView,
+    mdSysModules, SysApplicationsView, SysEBLookUpView, SysPrivilegesView,
 ];
 
 export const providers = [
     CustomersService,
-    SysModulesService, SysApplicationsService, SysEBLookUpService,
+    SysModulesService, SysApplicationsService, SysEBLookUpService, SysPrivilegesService,
 ];
 
 export const controllers = [
     PublicController,
     ValidationExampleController,
     CustomersController,
-    SysModulesController, SysApplicationsController, SysEBLookUpController,
-];
-
-export const middlewareController = [
-    PublicController,
-    ValidationExampleController,
-    CustomersController,
-    SysModulesController, SysApplicationsController, SysEBLookUpController,
+    SysModulesController, SysApplicationsController, SysEBLookUpController, SysPrivilegesController,
 ];

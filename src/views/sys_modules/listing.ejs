@@ -74,37 +74,7 @@
           </tbody>
         </table>
 
-        <div>
-          <% if (totalPages > 1) { %>
-            <div class="d-flex align-items-center">
-              
-              <div class="flex-grow-1">Showing <%= (page - 1) * pageSize + 1 %>–<%= Math.min(page * pageSize, total) %> of <%= total %></div>
-              
-              <nav class="flex-shrink-0 pagination">
-
-                <% if (total > 10) { %><a class="page-link" href="?page=1" aria-label="Previous page"><i class="fas fa-angle-double-left"></i></a><% } %>
-                
-                <% if (page > 1) { %><a class="page-link" href="?page=<%= page - 1 %>" aria-label="Previous page"><i class="fas fa-angle-left"></i></a>
-                <% } else { %><span class="page-link disabled" aria-disabled="true"><i class="fas fa-angle-left"></i></span>
-                <% } %>
-                
-                <% pages.forEach((pageNumber) => { %>
-                  <% if (pageNumber === page) { %><span class="page-link <% if(pageNumber === page){ %> active <% } %>" aria-current="page"><%= pageNumber %></span>
-                  <% } else { %><a class="page-link" href="?page=<%= pageNumber %>"><%= pageNumber %></a>
-                  <% } %>
-                <% }) %>
-                
-                <% if (page < totalPages) { %><a class="page-link" href="?page=<%= page + 1 %>" aria-label="Next page"><i class="fas fa-angle-right"></i></a>
-                <% } else { %><span class="page-link disabled" aria-disabled="true"><i class="fas fa-angle-right"></i></span>
-                <% } %>
-
-                <% if (total > 10) { %><a class="page-link" href="?page=<%= total  %>" aria-label="Previous page"><i class="fas fa-angle-double-right"></i></a><% } %>
-
-              </nav>
-
-            </div>
-          <% } %>
-        </div>
+        <%- include('../components/pagination') %>
 
       <% } else { %>
         <div class="text-center">
