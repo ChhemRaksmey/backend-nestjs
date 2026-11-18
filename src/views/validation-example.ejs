@@ -1,0 +1,63 @@
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">FORM VALIDATION</p>
+    <h1>Validation examples</h1>
+    <p class="muted">Server-side class-validator rules rendered with EJS.</p>
+  </div>
+</section>
+
+<% if (success) { %>
+  <div class="alert alert-success" role="status">All validation checks passed. This demo does not save the form.</div>
+<% } %>
+
+<section class="panel form-panel validation-panel">
+  <form action="<%= formAction %>" method="post" novalidate>
+    <div class="form-grid">
+      <label class="field">
+        <span>Name <span class="required">*</span> <span class="rule-hint">string(25), unique:customers,name</span></span>
+        <input type="text" name="name" value="<%= values.name %>" maxlength="25" required>
+        <% if (errors.name) { %><span class="field-error"><%= errors.name[0] %></span><% } %>
+      </label>
+
+      <label class="field">
+        <span>Quantity <span class="required">*</span> <span class="rule-hint">int</span></span>
+        <input type="number" name="quantity" value="<%= values.quantity %>" min="1" step="1" required>
+        <% if (errors.quantity) { %><span class="field-error"><%= errors.quantity[0] %></span><% } %>
+      </label>
+
+      <label class="field">
+        <span>Amount <span class="required">*</span> <span class="rule-hint">decimal(25,2)</span></span>
+        <input type="text" name="amount" value="<%= values.amount %>" inputmode="decimal" placeholder="123.45" required>
+        <% if (errors.amount) { %><span class="field-error"><%= errors.amount[0] %></span><% } %>
+      </label>
+
+      <label class="field">
+        <span>Date <span class="required">*</span> <span class="rule-hint">date</span></span>
+        <input type="date" name="date" value="<%= values.date %>" required>
+        <% if (errors.date) { %><span class="field-error"><%= errors.date[0] %></span><% } %>
+      </label>
+
+      <label class="field">
+        <span>Time <span class="required">*</span> <span class="rule-hint">time</span></span>
+        <input type="time" name="time" value="<%= values.time %>" required>
+        <% if (errors.time) { %><span class="field-error"><%= errors.time[0] %></span><% } %>
+      </label>
+
+      <label class="field">
+        <span>Email <span class="required">*</span> <span class="rule-hint">unique:customers,email</span></span>
+        <input type="email" name="email" value="<%= values.email %>" maxlength="255" required>
+        <% if (errors.email) { %><span class="field-error"><%= errors.email[0] %></span><% } %>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button class="button button-primary" type="submit">Validate values</button>
+    </div>
+  </form>
+</section>
+
+<section class="validation-reference">
+  <h2>Rules shown</h2>
+  <p><code>string(25)</code> limits the name to 25 characters; <code>unique:customers,name</code> checks the customer name field. <code>int</code> accepts a whole number. <code>decimal(25,2)</code> allows up to 23 digits before and 2 digits after the decimal point.</p>
+  <p><code>date</code> requires a real YYYY-MM-DD date; <code>time</code> requires 24-hour HH:mm. <code>unique:customers,email</code> checks the PostgreSQL customer email field.</p>
+</section>
