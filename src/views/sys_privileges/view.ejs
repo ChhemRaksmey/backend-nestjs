@@ -37,12 +37,12 @@
                     
                     <div class="mb-2 col-md-6">
                         <label class="form-label mb-1">Full Name</label>
-                        <input class="form-control" readonly disabled name="full_name" value="<%= record ? record.full_name : '' %>" />
+                        <input class="form-control" readonly name="full_name" value="<%= record ? record.full_name : '' %>" />
                     </div>
                     
                     <div class="mb-3 col-md-2">
                         <label class="form-label mb-1">Status</label>
-                        <input class="form-control" readonly disabled value="<%= (record && record.enable_status === 'Y')? "Enable" : "Disabled" %>" />
+                        <input class="form-control" readonly value="<%= (record && record.enable_status === 'Y')? "Enable" : "Disabled" %>" />
                     </div>
 
                     <% if(list_applications) { %>

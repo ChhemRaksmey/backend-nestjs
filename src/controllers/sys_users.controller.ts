@@ -1,11 +1,15 @@
 import {
   Controller, BadRequestException,
-  Query, Body, Res,
-  Get, Post,
+  Query, Body, Res, Get, Post,
 } from '@nestjs/common';
+import type { ClassConstructor } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 import { Response } from 'express';
 import { PaginationUtil } from '../utils/pagination.util';
 import { SysUsersService } from '../services/sys_users.service';
+import { ValidateCreate, ValidateEdit, ValidateResetPassword } from '../models/sys_users.entity';
+import { getClientAction, getCheckSubmitRecid, getValidateForm, getFormMianInfo } from '../utils/form_check';
 
 const routes = {
   baseurl: '/core-system/users',
@@ -15,6 +19,7 @@ const views = {
   listing: 'sys_users/listing',
   create: 'sys_users/create',
   update: 'sys_users/edit',
+  reset_password: 'sys_users/reset_password',
   view: 'sys_users/view',
   authorize: 'sys_users/authorize',
 } as const;
@@ -22,9 +27,12 @@ const views = {
 @Controller([routes.baseurl])
 export class SysUsersController {
 
-  private readonly pageTitle = 'System Users';
-  private readonly pageDscr = 'Create and mantenance system user info.';
   private readonly pageSize = 10;
+  private readonly pageinfo = {
+    pageTitle: 'System Users',
+    pageDscr: 'Create and mantenance system user info.',
+    baseurl: routes.baseurl,
+  };
 
   constructor(private readonly service: SysUsersService) {}
 
@@ -37,11 +45,11 @@ export class SysUsersController {
     @Query('page') pageParam?: string,
   ): Promise<void> {
     switch (action ?? 'listing') {
-      case 'page-create'  : this.pageCreate(response); return;
-      case 'page-update'  : await this.pageUpdate(response, recid); return;
-      case 'page-view'    : await this.pageView(response, recid); return;
-      case 'page-approve' : 
-      case 'page-delete'  : await this.pageAuthorize(response, recid); return;
+      case 'page-create'         : this.pageCreate(response); return;
+      case 'page-update'         : await this.pageUpdate(response, recid); return;
+      case 'page-reset-password' : await this.pageResetPassword(response, recid); return;
+      case 'page-view'           : await this.pageView(response, recid); return;
+      case 'page-authorize'      : await this.pageAuthorize(response, recid); return;
       default: await this.pageListing(response, msg, pageParam); return;
     }
   }
@@ -51,14 +59,15 @@ export class SysUsersController {
     @Body() body: Record<string, unknown>,
     @Res() response: Response,
   ): Promise<void> {
-    const action = this.getClientAction(body);
+    const action = getClientAction(body);
 
     switch (action) {
       case 'cancel': response.redirect(routes.baseurl); return;
-      case 'submit-create'  : this.saveCreate(response, body); return;
-      case 'submit-update'  : this.saveUpdate(response, body); return;
-      case 'submit-approve' : await this.saveApprove(response, body); return;
-      case 'submit-delete'  : await this.saveDelete(response, body); return;
+      case 'submit-create'         : await this.saveCreate(response, body); return;
+      case 'submit-update'         : await this.saveUpdate(response, body); return;
+      case 'submit-reset-password' : await this.saveResetPassword(response, body); return;
+      case 'submit-approve'        : await this.saveApprove(response, body); return;
+      case 'submit-delete'         : await this.saveDelete(response, body); return;
       default: throw new BadRequestException('A supported client-action is required.');
     }
   }
@@ -75,61 +84,153 @@ export class SysUsersController {
 
     response.render(
       views.listing,
-      PaginationUtil.withData(records, this.pageData(msg ?? '')),
+      PaginationUtil.withData(
+        records,
+        getFormMianInfo(msg ?? '', this.pageinfo),
+      ),
     );
   }
 
   private pageCreate(response: Response): void {
     response.render(views.create, {
-      ...this.pageData(),
+      ...getFormMianInfo('', this.pageinfo),
       oldvalue: this.emptyUserValues(),
     });
   }
 
   private async pageUpdate(response: Response, recid?: string): Promise<void> {
-    const record = await this.service.getRecord(this.requireRecid(recid));
+    const record = await this.service.getRecord(getCheckSubmitRecid(recid));
     response.render(views.update, {
-      ...this.pageData(),
+      ...getFormMianInfo('', this.pageinfo),
+      oldvalue: record,
+    });
+  }
+
+  private async pageResetPassword(response: Response, recid?: string): Promise<void> {
+    const record = await this.service.getRecord(getCheckSubmitRecid(recid));
+    response.render(views.reset_password, {
+      ...getFormMianInfo('', this.pageinfo),
       oldvalue: record,
     });
   }
 
   private async pageView(response: Response, recid?: string): Promise<void> {
-    const record = await this.service.getRecord(this.requireRecid(recid));
+    const record = await this.service.getRecord(getCheckSubmitRecid(recid));
     response.render(views.view, {
-      ...this.pageData(),
+      ...getFormMianInfo('', this.pageinfo),
       oldvalue: record,
     });
   }
 
   private async pageAuthorize(response: Response, recid?: string): Promise<void> {
-    const record = await this.service.getRecord(this.requireRecid(recid));
+    const record = await this.service.getRecord(getCheckSubmitRecid(recid));
     response.render(views.authorize, {
-      ...this.pageData(),
+      ...getFormMianInfo('', this.pageinfo),
       oldvalue: record,
     });
   }
 
-  private saveCreate(
+  private async saveCreate(
     response: Response,
     body: Record<string, unknown>,
-  ): void {
+  ): Promise<void> {
+
+    const submitform = {
+      staff_id: body.staff_id ?? '',
+      signon_name: body.signon_name ?? '',
+      full_name: body.full_name ?? '',
+      id_branch: body.id_branch ?? '',
+      date_start: body.date_start ?? '',
+      date_end: body.date_end ?? '',
+      time_start: body.time_start ?? '',
+      time_end: body.time_end ?? '',
+      id_privilege: body.id_privilege ?? '',
+    };
+    const errors = await getValidateForm(submitform, ValidateCreate);
+
+    if (Object.keys(errors).length > 0) {
+      response.status(422).render(views.create, {
+        ...getFormMianInfo('', this.pageinfo),
+        oldvalue: submitform,
+        errors,
+      });
+      return;
+    }
+
     response.redirect(routes.baseurl +"?msg=record had been create");
     return;
   }
 
-  private saveUpdate(
+  private async saveUpdate(
     response: Response,
     body: Record<string, unknown>,
-  ): void {
-    
-    const recid = this.requireRecid(
+  ): Promise<void> {
+
+    const recid = getCheckSubmitRecid(
       typeof body.recid === 'string' ? body.recid : undefined,
     );
 
-    response.redirect(
-      `${routes.baseurl}?client-action=page-view&recid=${encodeURIComponent(recid)}`,
+    const submitform = {
+      id_user      : body.recid ?? '',
+      staff_id     : body.staff_id ?? '',
+      signon_name  : body.signon_name ?? '',
+      full_name    : body.full_name ?? '',
+      id_branch    : body.id_branch ?? '',
+      date_start   : body.date_start ?? '',
+      date_end     : body.date_end ?? '',
+      time_start   : body.time_start ?? '',
+      time_end     : body.time_end ?? '',
+      id_privilege : body.id_privilege ?? '',
+    };
+    const errors = await getValidateForm(submitform, ValidateEdit);
+    const oldvalue = { ...submitform, id_user: recid };
+
+    if (Object.keys(errors).length > 0) {
+      response.status(422).render(views.update, {
+        ...getFormMianInfo('', this.pageinfo),
+        oldvalue,
+        errors,
+      });
+      return;
+    }
+
+    response.redirect(`${routes.baseurl}?client-action=page-view&recid=${recid}`);
+    return;
+  }
+  
+  private async saveResetPassword(
+    response: Response,
+    body: Record<string, unknown>,
+  ): Promise<void> {
+
+    const recid = getCheckSubmitRecid(
+      typeof body.recid === 'string' ? body.recid : undefined,
     );
+
+    const submitform = {
+      id_user            : body.recid ?? '',
+      staff_id           : body.staff_id ?? '',
+      signon_name        : body.signon_name ?? '',
+      full_name          : body.full_name ?? '',
+      NewPassword        : body.NewPassword ?? '',
+      ConfirmNewPassword : body.ConfirmNewPassword ?? '',
+    };
+    const errors = await getValidateForm(submitform, ValidateResetPassword);
+
+    if (Object.keys(errors).length > 0) {
+      const record = await this.service.getRecord(recid);
+      response.status(422).render(views.reset_password, {
+        ...getFormMianInfo('', this.pageinfo),
+        oldvalue: {
+          ...record,
+          reset_type: body.reset_type ?? 'ATTEMP.PASSWORD',
+        },
+        errors,
+      });
+      return;
+    }
+
+    response.redirect(`${routes.baseurl}?msg=user had been reseted ${body.full_name}`);
     return;
   }
 
@@ -149,16 +250,6 @@ export class SysUsersController {
     return;
   }
 
-  private pageData(msg = '') {
-    return {
-      pageTitle: this.pageTitle,
-      pageDscr: this.pageDscr,
-      baseurl: routes.baseurl,
-      errors: {},
-      msg,
-    };
-  }
-
   private emptyUserValues() {
     return {
       staff_id: '',
@@ -171,19 +262,6 @@ export class SysUsersController {
       time_end: '23:45',
       id_privilege: '',
     };
-  }
-
-  private getClientAction(body: Record<string, unknown>): string {
-    return typeof body['client-action'] === 'string'
-      ? body['client-action']
-      : '';
-  }
-
-  private requireRecid(recid?: string): string {
-    if (!recid) {
-      throw new BadRequestException('recid is required for this request.');
-    }
-    return recid;
   }
 
 }

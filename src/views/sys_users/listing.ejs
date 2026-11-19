@@ -44,7 +44,6 @@
                 <option value="Y">Expired</option>
                 <option value="Y">Locked</option>
                 <option value="Y">Reset Password</option>
-                <option value="N">Disabled</option>
               </select>
             </div>
             <div class="col-lg-1">
@@ -83,10 +82,9 @@
                       <a class="dropdown-item font-size-12" href="<%= baseurl %>?client-action=page-view&amp;recid=<%= item.id_user %>">View</a>
                       <div class="dropdown-divider"></div>
                       <a class="dropdown-item font-size-12" href="<%= baseurl %>?client-action=page-update&amp;recid=<%= item.id_user %>">Edit</a>
-                      <a class="dropdown-item font-size-12" href="<%= baseurl %>">Reset Attempts</a>
-                      <a class="dropdown-item font-size-12" href="<%= baseurl %>">Reset Password</a>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>?client-action=page-reset-password&amp;recid=<%= item.id_user %>">Reset Password</a>
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item font-size-12" href="<%= baseurl %>?client-action=page-approve&amp;recid=<%= item.id_user %>">Authorize</a>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>?client-action=page-authorize&amp;recid=<%= item.id_user %>">Authorize</a>
                     </div>
                   </div>
                 </td>

@@ -1,0 +1,104 @@
+
+<section>
+  <div class="card">
+
+    <div class="card-body border-bottom pb-2">
+      <div class="d-flex align-items-center">
+        <div class="flex-grow-1">
+          <h5 class="mb-1 card-title"><%= pageTitle %></h5>
+          <p class="text-muted mb-0"><%= pageDscr %></p>
+        </div>
+        <div class="flex-shrink-0">
+          <a class="btn btn-soft-primary" href="<%= baseurl %>/create"><i class="fas fa-plus me-2"></i>Add New</a>
+          <a class="btn btn-soft-secondary" href="<%= baseurl %>"><i class="fas fa-sync-alt"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <% if (total) { %>
+
+        <form class="card-body border-bottom pt-1" method="get" action="<%= baseurl %>">
+          <div class="row g-3 justify-content-center">
+            <div class="col-lg-4">
+              <input class="form-control" placeholder="Search for ..." />
+            </div>
+            <div class="col-lg-4">
+              <select class="form-select select2">
+                <option value="" selected>All Modules</option>
+                <option value="Module 1">Module 1</option>
+                <option value="Module 2">Module 2</option>
+              </select>
+            </div>
+            <div class="col-lg-2">
+              <select class="form-select select2">
+                <option value="" selected>All Status</option>
+                <option value="Y">Enable</option>
+                <option value="N">Disabled</option>
+              </select>
+            </div>
+            <div class="col-lg-2">
+              <button class="btn btn-soft-secondary w-100" type="submit">
+                <i class="mdi mdi-filter-outline align-middle"></i>Filter
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <table class="table table-striped align-middle dt-responsive nowrap w-100 table-check" id="job-list">
+          <thead>
+            <tr>
+              <th scope="col" class="font-size-12 py-2 col-6">Full Name</th>
+              <th scope="col" class="font-size-12 py-2 col-4">Base Url</th>
+              <th scope="col" class="font-size-12 py-2 col-1 text-center">Status</th>
+              <th scope="col" class="font-size-12 py-2 col-1 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% records.forEach((item) => { %>
+              <tr>
+                <td class="font-size-12 py-1"><%= item.full_name %></td>
+                <td class="font-size-12 py-1"><%= item.base_url %></td>
+                <td class="font-size-12 py-1 text-center">
+                  <% if (item.enable_status === "Y") { %><span class="badge bg-primary">Enable</span></td>
+                  <% } else { %><span class="badge bg-danger">Disabled</span></td>
+                  <% } %>
+                <td class="font-size-12 py-1 text-center">
+                  <div class="btn-group">
+                    <a aria-expanded="false" aria-haspopup="true" class="btn-sm btn btn-soft-primary" data-bs-toggle="dropdown" role="button">
+                      <i class="mdi mdi-file-cog-outline"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/view/<%= item.id_module %>">View</a>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/update/<%= item.id_module %>">Edit</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/authorize/<%= item.id_module %>">Authorize</a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+
+        <%- include('../components/pagination') %>
+
+      <% } else { %>
+        <div class="text-center">
+          <h3><%= title %></h3>
+          <p>Add first module to get start</p>
+        </div>
+      <% } %>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    "use strict";
+    <% if (msg) { %>
+      toastr["success"]("<%= msg %>");
+    <% } %>
+  });
+</script>

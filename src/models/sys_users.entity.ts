@@ -1,5 +1,14 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  MaxLength,
+  Validate,
+  ValidationArguments,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+} from 'class-validator';
 
 @ViewEntity({ name: 'vw_sys_users', synchronize: false })
 export class SysUsersView {
@@ -67,9 +76,78 @@ export class ValidateCreate {
   
   @IsNotEmpty({ message: 'mandatory Default Branch' })
   id_branch;
-  
-  // @IsNotEmpty({ message: 'mandatory Default Privilege' })
-  // id_privilege;
 
 }
 
+export class ValidateEdit {
+
+  @IsNotEmpty({ message: 'record id is mandatory' })
+  id_user;
+
+  @IsNotEmpty({ message: 'mandatory Staff ID' })
+  staff_id;
+  
+  @IsNotEmpty({ message: 'mandatory Signon Name' })
+  signon_name;
+  
+  @IsNotEmpty({ message: 'mandatory Full Name' })
+  full_name;
+  
+  @IsNotEmpty({ message: 'mandatory Date Start' })
+  date_start;
+  
+  @IsNotEmpty({ message: 'mandatory Date End' })
+  date_end;
+  
+  @IsNotEmpty({ message: 'mandatory Time Start' })
+  time_start;
+  
+  @IsNotEmpty({ message: 'mandatory Time End' })
+  time_end;
+  
+  @IsNotEmpty({ message: 'mandatory Default Branch' })
+  id_branch;
+
+}
+
+@ValidatorConstraint({ name: 'passwordsMatch', async: false })
+class PasswordsMatchConstraint implements ValidatorConstraintInterface {
+  validate(
+    confirmPassword: unknown,
+    args?: ValidationArguments,
+  ): boolean {
+    if (
+      !args ||
+      typeof confirmPassword !== 'string' ||
+      confirmPassword.length === 0
+    ) {
+      return true;
+    }
+
+    const { NewPassword } = args.object as { NewPassword?: unknown };
+    return typeof NewPassword !== 'string' || NewPassword.length === 0
+      ? true
+      : confirmPassword === NewPassword;
+  }
+
+  defaultMessage(): string {
+    return 'Confirm New Password must match New Password';
+  }
+}
+
+export class ValidateResetPassword {
+
+  @IsNotEmpty({ message: 'record id is mandatory' })
+  id_user: string;
+
+  @IsString({ message: 'New Password must be a string' })
+  @IsNotEmpty({ message: 'mandatory New Password' })
+  @Validate(PasswordsMatchConstraint)
+  NewPassword: string;
+  
+  @IsString({ message: 'Confirm New Password must be a string' })
+  @IsNotEmpty({ message: 'mandatory Confirm New Password' })
+  @Validate(PasswordsMatchConstraint)
+  ConfirmNewPassword: string;
+
+}

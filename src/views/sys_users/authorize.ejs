@@ -1,7 +1,7 @@
 
 <form class="card" method="post" action="<%= baseurl %>">
 
-    <input type="hidden" name="recid" value="<%= oldvalue.id_user : '' %>" />
+    <input type="hidden" name="recid" value="<%= oldvalue.id_user ?? '' %>" />
 
     <div class="card-body border-bottom pb-2">
         <div class="d-flex align-items-center">
@@ -41,47 +41,47 @@
                     
                     <div class="mb-2 col-md-2">
                         <label class="form-label mb-1">Staff Id</label>
-                        <input class="form-control" readonly disabled value="<%= oldvalue.staff_id ?? '' %>"  />
+                        <input class="form-control" readonly value="<%= oldvalue.staff_id ?? '' %>"  />
                     </div>
                     
                     <div class="mb-2 col-md-4">
                         <label class="form-label mb-1">Signon Name</label>
-                        <input class="form-control" readonly disabled value="<%= oldvalue.signon_name ?? '' %>"  />
+                        <input class="form-control" readonly value="<%= oldvalue.signon_name ?? '' %>"  />
                     </div>
                     
                     <div class="mb-2 col-md-6">
                         <label class="form-label mb-1">Full Name</label>
-                        <input class="form-control" readonly disabled value="<%= oldvalue.full_name ?? '' %>" />
+                        <input class="form-control" readonly value="<%= oldvalue.full_name ?? '' %>" />
                     </div>
                     
                     <div class="mb-2 col-md-6">
                         <label class="form-label mb-1">Default Branch</label>
-                        <input class="form-control" readonly disabled value="<%= oldvalue.full_name ?? '' %>" />
+                        <input class="form-control" readonly value="<%= oldvalue.full_name ?? '' %>" />
                     </div>
                     
                     <div class="mb-2 col-md-2">
                         <label class="form-label mb-1">Date Start</label>
-                        <input class="form-control" readonly disabled value="<%= oldvalue.date_start ?? '' %>" />
+                        <input class="form-control" readonly value="<%= oldvalue.date_start ?? '' %>" />
                     </div>
                     
                     <div class="mb-2 col-md-2">
                         <label class="form-label mb-1">Date End</label>
-                        <input class="form-control" readonly disabled value="<%= oldvalue.date_end ?? '' %>" />
+                        <input class="form-control" readonly value="<%= oldvalue.date_end ?? '' %>" />
                     </div>
                     
                     <div class="mb-2 col-md-1">
                         <label class="form-label mb-1">Time Start</label>
-                        <input class="form-control" readonly disabled value="<%= oldvalue.time_start ?? '' %>" />
+                        <input class="form-control" readonly value="<%= oldvalue.time_start ?? '' %>" />
                     </div>
                     
                     <div class="mb-2 col-md-1">
                         <label class="form-label mb-1">Time End</label>
-                        <input class="form-control" readonly disabled value="<%= oldvalue.time_end ?? '' %>" />
+                        <input class="form-control" readonly value="<%= oldvalue.time_end ?? '' %>" />
                     </div>
                     
                     <div class="mb-2 col-md-12">
                         <label class="form-label mb-1">Access Privileges</label>
-                        <input class="form-control" readonly disabled value="" />
+                        <input class="form-control" readonly value="" />
                     </div>
 
                 </div>
@@ -93,10 +93,4 @@
 
     </div>
 
-</form>
-
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    "use strict";
-  });
-</script>
+</div>
