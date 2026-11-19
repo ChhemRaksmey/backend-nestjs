@@ -1,5 +1,4 @@
 
-
 import { PublicController } from '../controllers/public.controller';
 import { ValidationExampleController } from '../controllers/validation-example.controller';
 
@@ -23,20 +22,24 @@ import { SysPrivilegesView } from '../models/sys_privileges.entity';
 import { SysPrivilegesService } from '../services/sys_privileges.service';
 import { SysPrivilegesController } from '../controllers/sys_privileges.controller';
 
+import { SysUsersView } from '../models/sys_users.entity';
+import { SysUsersService } from '../services/sys_users.service';
+import { SysUsersController } from '../controllers/sys_users.controller';
+
 
 export const entities = [
     Customer,
-    mdSysModules, SysApplicationsView, SysEBLookUpView, SysPrivilegesView,
+    mdSysModules, SysApplicationsView, SysEBLookUpView, SysPrivilegesView, SysUsersView,
 ];
 
 export const providers = [
     CustomersService,
-    SysModulesService, SysApplicationsService, SysEBLookUpService, SysPrivilegesService,
+    SysModulesService, SysApplicationsService, SysEBLookUpService, SysPrivilegesService, SysUsersService,
 ];
 
 export const controllers = [
     PublicController,
     ValidationExampleController,
     CustomersController,
-    SysModulesController, SysApplicationsController, SysEBLookUpController, SysPrivilegesController,
+    SysModulesController, SysApplicationsController, SysEBLookUpController, SysPrivilegesController, SysUsersController,
 ];

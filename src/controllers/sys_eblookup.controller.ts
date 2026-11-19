@@ -11,7 +11,7 @@ import { SysEBLookUpService } from '../services/sys_eblookup.service';
 import { ValidateCreate } from '../models/sys_applications.entity';
 
 const routes = {
-  baseurl   : '/sys-eblookup',
+  baseurl   : '/core-system/eb-lookup',
   create    : '/create',
   update    : '/update/:recid',
   view      : '/view/',

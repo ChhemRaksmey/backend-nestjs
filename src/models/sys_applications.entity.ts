@@ -6,6 +6,9 @@ export class SysApplicationsView {
 
   @ViewColumn()
   id_module: string;
+
+  @ViewColumn()
+  module_full_name: string;
   
   @ViewColumn()
   id_application: string;

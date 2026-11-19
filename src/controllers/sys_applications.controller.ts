@@ -11,7 +11,7 @@ import { SysApplicationsService } from '../services/sys_applications.service';
 import { ValidateCreate } from '../models/sys_applications.entity';
 
 const routes = {
-  baseurl   : '/sys-applications',
+  baseurl   : '/core-system/applications',
   create    : '/create',
   update    : '/update/:recid',
   view      : '/view/',

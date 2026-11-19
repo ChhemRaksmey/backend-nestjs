@@ -11,7 +11,7 @@ import { SysModulesService } from '../services/sys_modules.service';
 import { ValidateCreate } from '../models/sys_modules.entity';
 
 const routes = {
-  baseurl   : '/sys-modules',
+  baseurl   : '/core-system/modules',
   create    : '/create',
   update    : '/update/:recid',
   view      : '/view/',

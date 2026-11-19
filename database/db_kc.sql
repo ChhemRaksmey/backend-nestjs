@@ -8,6 +8,7 @@ BEGIN
 	DROP TABLE IF EXISTS sys_modules CASCADE;       CREATE TABLE sys_modules (recid CHARACTER VARYING(35) PRIMARY KEY, json_data JSONB DEFAULT NULL, json_audit JSONB DEFAULT NULL);
 	DROP TABLE IF EXISTS sys_applications CASCADE;  CREATE TABLE sys_applications (recid CHARACTER VARYING(35) PRIMARY KEY, json_data JSONB DEFAULT NULL, json_audit JSONB DEFAULT NULL);
 	DROP TABLE IF EXISTS sys_privileges CASCADE;    CREATE TABLE sys_privileges (recid CHARACTER VARYING(35) PRIMARY KEY, json_data JSONB DEFAULT NULL, json_audit JSONB DEFAULT NULL);
+	DROP TABLE IF EXISTS hris_branch CASCADE;       CREATE TABLE hris_branch (recid CHARACTER VARYING(35) PRIMARY KEY, json_data JSONB DEFAULT NULL, json_audit JSONB DEFAULT NULL);
 	DROP TABLE IF EXISTS sys_users CASCADE;         CREATE TABLE sys_users (recid CHARACTER VARYING(35) PRIMARY KEY, json_data JSONB DEFAULT NULL, json_audit JSONB DEFAULT NULL);
 	DROP TABLE IF EXISTS sys_user_password CASCADE; CREATE TABLE sys_user_password (recid CHARACTER VARYING(35) PRIMARY KEY, json_data JSONB DEFAULT NULL, json_audit JSONB DEFAULT NULL);
 	
@@ -27,19 +28,28 @@ BEGIN
 	    ('USR.STATUS*RESET', '{"recid":"USER.STATUS*RESET", "c1":"", "c2":"Reset Password", "c3":"Y"}', v_audit);
 	
 	INSERT INTO sys_modules VALUES
-	    ('CORE.SYSTEM', '{"recid":"CORE.SYSTEM", "c1":"Core System Module", "c2":"/core-system", "c3":"Y"}', v_audit);
+	    ('CORE.SYSTEM', '{"recid":"CORE.SYSTEM", "c1":"Core System", "c2":"/core-system", "c3":"Y"}', v_audit),
+		('HUMAN.RESOURCE', '{"recid":"HUMAN.RESOURCE", "c1":"Human Resource", "c2":"/hris", "c3":"Y"}', v_audit);
 	
 	INSERT INTO sys_applications VALUES
 	    ('SYSTEM.EBLOOKUP', '{"recid":"SYSTEM.EBLOOKUP", "c1":"CORE.SYSTEM", "c2":"System EB Lookup Item Lists", "c3":"/eb-lookup", "c4":["APP.PERM*VIEW", "APP.PERM*CRETATE", "APP.PERM*EDIT", "APP.PERM*REVERSE", "APP.PERM*DELETE", "APP.PERM*APPROVE"], "c5":"Y"}', v_audit),
 	    ('SYSTEM.MODULES', '{"recid":"SYSTEM.MODULES", "c1":"CORE.SYSTEM", "c2":"System Modules", "c3":"/modules", "c4":["APP.PERM*VIEW", "APP.PERM*CRETATE", "APP.PERM*EDIT", "APP.PERM*REVERSE", "APP.PERM*DELETE", "APP.PERM*APPROVE"], "c5":"Y"}', v_audit),
 	    ('SYSTEM.APPLICATIONS', '{"recid":"SYSTEM.APPLICATIONS", "c1":"CORE.SYSTEM", "c2":"System Applications", "c3":"/applications", "c4":["APP.PERM*VIEW", "APP.PERM*CRETATE", "APP.PERM*EDIT", "APP.PERM*REVERSE", "APP.PERM*DELETE", "APP.PERM*APPROVE"], "c5":"Y"}', v_audit),
 	    ('SYSTEM.PRIVILEGES', '{"recid":"SYSTEM.PRIVILEGES", "c1":"CORE.SYSTEM", "c2":"System Privileges", "c3":"/privileges", "c4":["APP.PERM*VIEW", "APP.PERM*CRETATE", "APP.PERM*EDIT", "APP.PERM*REVERSE", "APP.PERM*DELETE", "APP.PERM*APPROVE"], "c5":"Y"}', v_audit),
-	    ('SYSTEM.USERS', '{"recid":"SYSTEM.USERS", "c1":"CORE.SYSTEM", "c2":"System Users", "c3":"/users", "c4":["APP.PERM*VIEW", "APP.PERM*CRETATE", "APP.PERM*EDIT", "APP.PERM*REVERSE", "APP.PERM*DELETE", "APP.PERM*APPROVE"], "c5":"Y"}', v_audit);
+	    ('SYSTEM.USERS', '{"recid":"SYSTEM.USERS", "c1":"CORE.SYSTEM", "c2":"System Users", "c3":"/users", "c4":["APP.PERM*VIEW", "APP.PERM*CRETATE", "APP.PERM*EDIT", "APP.PERM*REVERSE", "APP.PERM*DELETE", "APP.PERM*APPROVE"], "c5":"Y"}', v_audit),
+
+		('HRIS.BRANCH', '{"recid":"HRIS.BRANCH", "c1":"HUMAN.RESOURCE", "c2":"Branches", "c3":"/branch", "c4":["APP.PERM*VIEW", "APP.PERM*CRETATE", "APP.PERM*EDIT", "APP.PERM*REVERSE", "APP.PERM*DELETE", "APP.PERM*APPROVE"], "c5":"Y"}', v_audit);
 	
 	INSERT INTO sys_privileges VALUES
 	    ('CORE.SYSTEM', '{"recid":"CORE.SYSTEM", "c1":"System Owner", "c2":"Y", "c3":{ "Core System":{ "SYSTEM.EBLOOKUP":{"label":"EB Lookup", "no_auth":"0"}, "SYSTEM.MODULES":{"label":"Modules", "no_auth":"0"}, "SYSTEM.APPLICATIONS":{"label":"Applications", "no_auth":"0"}, "SYSTEM.PRIVILEGES":{"label":"Privileges", "no_auth":"0"}, "SYSTEM.USERS":{"label":"User Setup", "no_auth":"0"} }}}', v_audit),
 	    ('20260010001', '{"recid":"20260010001", "c1":"System Administrator", "c2":"Y", "c3":{ "Core System":{ "SYSTEM.MODULES":{"label":"Modules", "no_auth":"0"}, "SYSTEM.APPLICATIONS":{"label":"Applications", "no_auth":"0"}, "SYSTEM.PRIVILEGES":{"label":"Privileges", "no_auth":"0"}, "SYSTEM.USERS":{"label":"User Setup", "no_auth":"0"} }}}', v_audit);
 	
+	INSERT INTO hris_branch VALUES
+	    ('KH0010001', '{"recid":"KH0010001", "c1":"HO", "c2":"HEAD OFFICE", "c3":"MAIN.OFFICE", "c4":"Y"}', v_audit),
+		('KH0010002', '{"recid":"KH0010002", "c1":"OPO", "c2":"OPERATION DEPARTMENT", "c3":"MAIN.BRANCH", "c4":"Y"}', v_audit),
+		('KH0010003', '{"recid":"KH0010003", "c1":"B01", "c2":"BRANCH 01", "c3":"", "c4":"Y"}', v_audit),
+		('KH0010004', '{"recid":"KH0010004", "c1":"B02", "c2":"BRANCH 02", "c3":"", "c4":"Y"}', v_audit);
+
 	INSERT INTO sys_users VALUES
 	    ('SYSTEM.OWNER', '{"recid":"SYSTEM.OWNER", "c1":"00000000000001", "c2":"SYSTEM.OWNER", "c3":"System Owner User", "c4":"20260101", "c5":"29991231", "c6":"00", "c7":"24", "c8":"KH0010001", "c9":["KH0010001", "KH0010002", "KH0010003"], "c10":"CORE.SYSTEM", "c11":"Active", "c12":"0"}', v_audit),
 	    ('U2026001000001', '{"recid":"U2026001000001", "c1":"STAFFID-000001", "c2":"BRANCH.TELLER", "c3":"User Branch Teller", "c4":"20260101", "c5":"29991231", "c6":"00", "c7":"24", "c8":"KH0010001", "c9":[], "c10":"20260010001", "c11":"Active", "c12":"0"}', v_audit),
@@ -54,6 +64,16 @@ BEGIN
 
 
 
+
+	DROP VIEW IF EXISTS vw_hris_branch;
+	CREATE OR REPLACE VIEW vw_hris_branch AS
+	SELECT
+		recid AS id_branch,
+		COALESCE(json_data->>'c1', '') AS short_name,
+		COALESCE(json_data->>'c2', '') AS full_name,
+		COALESCE(json_data->>'c3', '') AS branch_type,
+		COALESCE(json_data->>'c4', '') AS enable_status
+	FROM hris_branch;
 
 
 	DROP VIEW IF EXISTS vw_sys_user_password;

@@ -10,30 +10,28 @@
                         <span key="t-chat">User Interface</span>
                     </a>
                 </li>
-                
-                <li>
-                    <a class="py-1 font-size-12 has-arrow waves-effect" href="javascript: void(0);">
-                        <span key="t-dashboards">Dashboards</span>
-                    </a>
-                    <ul aria-expanded="false" class="sub-menu">
-                        <li><a class="font-size-12 ps-5" href="/customers" key="t-dashboard-1">Dashboard 1</a></li>
-                        <li><a class="font-size-12 ps-5" href="#" key="t-dashboard-2">Dashboard 2</a></li>
-                        <li><a class="font-size-12 ps-5" href="#" key="t-dashboard-3">Dashboard 3</a></li>
-                    </ul>
-                </li>
-                
-                <li>
-                    <a class="py-1 font-size-12 has-arrow waves-effect" href="javascript: void(0);">
-                        <span key="t-CoreSystem">Core System</span>
-                    </a>
-                    <ul aria-expanded="false" class="sub-menu">
-                        <li><a class="font-size-12 ps-5" href="/sys-eblookup" key="t-eblookup">EB Lookup</a></li>
-                        <li><a class="font-size-12 ps-5" href="/sys-modules" key="t-Modules">Modules</a></li>
-                        <li><a class="font-size-12 ps-5" href="/sys-applications" key="t-Applications">Applications</a></li>
-                        <li><a class="font-size-12 ps-5" href="/sys-privileges" key="t-Privileges">Privileges</a></li>
-                        <li><a class="font-size-12 ps-5" href="/" key="t-UserSetup">User Setup</a></li>
-                    </ul>
-                </li>
+
+                <% let currentModuleId = ''; %>
+
+                <% sidebarItems.forEach((item, index) => { %>
+                    
+                    <% if (item.id_module !== currentModuleId) { %>
+                        <% if (index > 0) { %></ul></li><% } %>
+                        <li>
+                            <a class="py-1 font-size-12 has-arrow waves-effect" href="javascript: void(0);">
+                                <span><%= item.module_full_name %></span>
+                            </a>
+                            <ul aria-expanded="false" class="sub-menu">
+                        <% currentModuleId = item.id_module; %>
+                    <% } %>
+
+                    <li>
+                        <a class="font-size-12 ps-5" href="<%= item.base_url %>"><%= item.full_name %></a>
+                    </li>
+
+                <% }); %>
+
+                <% if (sidebarItems.length > 0) { %></ul></li><% } %>
 
             </ul>
         </div>

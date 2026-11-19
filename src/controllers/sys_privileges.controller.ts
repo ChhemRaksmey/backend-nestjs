@@ -11,7 +11,7 @@ import { SysPrivilegesService } from '../services/sys_privileges.service';
 import { ValidateCreate } from '../models/sys_privileges.entity';
 
 const routes = {
-  baseurl   : '/sys-privileges',
+  baseurl   : '/core-system/privileges',
   create    : '/create',
   update    : '/update/:recid',
   view      : '/view/',
