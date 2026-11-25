@@ -1,0 +1,96 @@
+
+<form class="card" method="post" action="<%= baseurl %>/update/<%= values ? values.id_branch : '' %>">
+
+    <div class="card-body border-bottom pb-2">
+        <div class="d-flex align-items-center">
+            <div class="flex-grow-1">
+                <h5 class="mb-1 card-title"><%= pageTitle %></h5>
+                <p class="text-muted mb-0"><%= pageDscr %></p>
+            </div>
+            <div class="flex-shrink-0">
+                <button class="btn btn-soft-primary" type="submit" name="client-submt" value="submit-update" title="Submit Update"><i class="fas fa-check"></i></button>
+                <a class="btn btn-soft-secondary" role="button" href="<%= baseurl %>" title="Cancel"><i class="fas fa-level-up-alt"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <% if (msg) { %>
+          <div class="alert alert-info" role="status"><%= msg %></div>
+        <% } %>
+
+        <% if (errors && Object.keys(errors).length) { %>
+          <div class="alert alert-danger" role="alert">
+            <p class="mb-1">Please fix the following fields:</p>
+            <ul class="mb-0">
+              <% Object.values(errors).flat().forEach((message) => { %>
+                <li><%= message %></li>
+              <% }) %>
+            </ul>
+          </div>
+        <% } %>
+        
+        <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" data-bs-toggle="tab" href="#tabMaster" role="tab" aria-selected="true">
+                    <span class="d-none d-sm-block">Master</span>
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#tabAudit" role="tab" aria-selected="false" tabindex="-1">
+                    <span class="d-none d-sm-block">Audit</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content p-3 text-muted">
+            
+            <div class="tab-pane active" id="tabMaster" role="tabpanel">
+
+                <div class="row">
+                    
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label mb-1">Short Name</label>
+                        <input class="form-control" name="short_name" maxlength="100" value="<%= values ? values.short_name : '' %>" />
+                        <% if (errors && errors.short_name) { %><small class="text-danger"><%= errors.short_name[0] %></small><% } %>
+                    </div>
+                    
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label mb-1">Full Name</label>
+                        <input class="form-control" name="full_name" maxlength="150" value="<%= values ? values.full_name : '' %>" />
+                        <% if (errors && errors.full_name) { %><small class="text-danger"><%= errors.full_name[0] %></small><% } %>
+                    </div>
+
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label mb-1">Branch Type</label>
+                        <input class="form-control" name="branch_type" maxlength="100" value="<%= values ? values.branch_type : '' %>" />
+                        <% if (errors && errors.branch_type) { %><small class="text-danger"><%= errors.branch_type[0] %></small><% } %>
+                    </div>
+                    
+                    <div class="mb-3 col-md-2">
+                        <label class="form-label mb-1">Status</label>
+                        <select class="form-select select2" name="enable_status">
+                            <option value="Y" <%= values && values.enable_status === 'Y' ? 'selected' : '' %>>Enable</option>
+                            <option value="N" <%= values && values.enable_status === 'N' ? 'selected' : '' %>>Disabled</option>
+                        </select>
+                        <% if (errors && errors.enable_status) { %><small class="text-danger"><%= errors.enable_status[0] %></small><% } %>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="tab-pane" id="tabAudit" role="tabpanel"></div>
+
+        </div>
+
+    </div>
+
+</form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    "use strict";
+  });
+</script>

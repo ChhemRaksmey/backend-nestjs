@@ -51,24 +51,15 @@
                 <div class="row">
                     
                     <div class="mb-3 col-md-3">
-                        <label class="form-label mb-1">Main Module</label>
-                        <select class="form-select select2" name="id_module">
-                            <option value="Y" <%= values && values.id_module === 'Y' ? 'selected' : '' %>>Module 1</option>
-                            <option value="N" <%= values && values.id_module === 'N' ? 'selected' : '' %>>Module 2</option>
-                        </select>
-                        <% if (errors && errors.id_module) { %><small class="text-danger"><%= errors.id_module[0] %></small><% } %>
+                        <label class="form-label mb-1">Item Link</label>
+                        <input class="form-control" name="item_link" maxlength="100" value="<%= values ? values.item_link : '' %>" />
+                        <% if (errors && errors.item_link) { %><small class="text-danger"><%= errors.item_link[0] %></small><% } %>
                     </div>
                     
                     <div class="mb-3 col-md-4">
-                        <label class="form-label mb-1">Full Name</label>
-                        <input class="form-control" name="full_name" maxlength="150" value="<%= values ? values.full_name : '' %>" />
-                        <% if (errors && errors.full_name) { %><small class="text-danger"><%= errors.full_name[0] %></small><% } %>
-                    </div>
-
-                    <div class="mb-3 col-md-3">
-                        <label class="form-label mb-1">Base URL</label>
-                        <input class="form-control" name="base_url" maxlength="100" value="<%= values ? values.base_url : '' %>" />
-                        <% if (errors && errors.base_url) { %><small class="text-danger"><%= errors.base_url[0] %></small><% } %>
+                        <label class="form-label mb-1">Item Narrative</label>
+                        <input class="form-control" name="item_narrative" maxlength="100" value="<%= values ? values.item_narrative : '' %>" />
+                        <% if (errors && errors.item_narrative) { %><small class="text-danger"><%= errors.item_narrative[0] %></small><% } %>
                     </div>
                     
                     <div class="mb-3 col-md-2">

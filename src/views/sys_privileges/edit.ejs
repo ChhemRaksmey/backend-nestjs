@@ -84,7 +84,7 @@
                                             <thead>
                                                 <tr>
                                                     <th class="py-1 col-3">Applications Name</th>
-                                                    <th class="py-1 col-9">
+                                                    <th class="py-1 col-8">
                                                         <div class="form-check me-3">
                                                             <label class="form-check-label">
                                                                 <input class="form-check-input me-2" type="checkbox" onchange="toggleAllRows(this)" />
@@ -92,6 +92,7 @@
                                                             </label>
                                                         </div>
                                                     </th>
+                                                    <th class="py-1 col-1 text-center">No Auth</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -100,7 +101,7 @@
                                 <% } %>
                                     
                                             <tr>
-                                                <td class="py-1">
+                                                <td class="py-2">
                                                     <div class="form-check me-3">
                                                         <label class="form-check-label">
                                                             <input class="form-check-input me-2" type="checkbox" onchange="toggleRowCheckboxes(this)" />
@@ -108,7 +109,7 @@
                                                         </label>
                                                     </div>
                                                 </td>
-                                                <td class="py-1 d-flex">
+                                                <td class="py-2 d-flex">
                                                     <% list_permissions.forEach((item2, index2) => { %>
                                                         <div class="form-check me-3">
                                                             <label class="form-check-label">
@@ -120,6 +121,9 @@
                                                             </label>
                                                         </div>
                                                     <% }); %>
+                                                </td>
+                                                <td class="py-1">
+                                                    <input type="text" class="form-control form-control-sm" value="0" />
                                                 </td>
                                             </tr>
 

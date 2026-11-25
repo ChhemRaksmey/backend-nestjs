@@ -39,12 +39,12 @@
                     
                     <div class="mb-2 col-md-6">
                         <label class="form-label mb-1">Full Name</label>
-                        <input class="form-control" readonly disabled name="full_name" value="<%= record ? record.full_name : '' %>" />
+                        <input class="form-control" readonly name="full_name" value="<%= record ? record.full_name : '' %>" />
                     </div>
                     
                     <div class="mb-3 col-md-2">
                         <label class="form-label mb-1">Status</label>
-                        <input class="form-control" readonly disabled value="<%= (record && record.enable_status === 'Y')? "Enable" : "Disabled" %>" />
+                        <input class="form-control" readonly value="<%= (record && record.enable_status === 'Y')? "Enable" : "Disabled" %>" />
                     </div>
 
                     <% if(list_applications) { %>
@@ -92,10 +92,17 @@
                                                 <td class="py-1"><%= item.full_name %></td>
                                                 <td class="py-1 d-flex">
                                                     <% list_permissions.forEach((item2, index2) => { %>
-                                                        <span class="badge btn-soft-primary mb-2 me-2">
-                                                            <i class="mdi mdi-check"></i>
-                                                            <%= item2.narrative %>
-                                                        </span>
+                                                        <% const applicationPermissions = oldvalue && oldvalue.permission ? oldvalue.permission[item.id_application] : null; %>
+                                                        <% const granted = applicationPermissions && (
+                                                            applicationPermissions[item2.recid] === 'on' ||
+                                                            applicationPermissions.label === item2.narrative
+                                                        ); %>
+                                                        <% if (granted) { %>
+                                                            <span class="badge btn-soft-primary mb-2 me-2">
+                                                                <i class="mdi mdi-check"></i>
+                                                                <%= item2.narrative %>
+                                                            </span>
+                                                        <% } %>
                                                     <% }); %>
                                                 </td>
                                             </tr>

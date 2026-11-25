@@ -1,5 +1,5 @@
 
-<form class="card" method="post" action="<%= baseurl %>/authorize/<%= values ? values.id_module : '' %>">
+<form class="card" method="post" action="<%= baseurl %>/authorize/<%= values ? values.id_item : '' %>">
 
     <div class="card-body border-bottom pb-2">
         <div class="d-flex align-items-center">
@@ -52,23 +52,21 @@
                 <div class="row">
                     
                     <div class="mb-3 col-md-3">
-                        <label class="form-label mb-1">Main Module</label>
-                        <input class="form-control" readonly disabled value="<%= values ? values.module_name : '' %>" />
+                        <label class="form-label mb-1">Item Link</label>
+                        <input class="form-control" readonly value="<%= values ? values.item_link : '' %>" />
                     </div>
                     
                     <div class="mb-3 col-md-4">
-                        <label class="form-label mb-1">Full Name</label>
-                        <input class="form-control" readonly disabled value="<%= values ? values.full_name : '' %>" />
+                        <label class="form-label mb-1">Item Narrative</label>
+                        <input class="form-control" readonly value="<%= values ? values.item_narrative : '' %>" />
                     </div>
 
                     <div class="mb-3 col-md-3">
-                        <label class="form-label mb-1">Base URL</label>
-                        <input class="form-control" readonly disabled value="<%= values ? values.base_url : '' %>" />
                     </div>
                     
                     <div class="mb-3 col-md-2">
                         <label class="form-label mb-1">Status</label>
-                        <input class="form-control" readonly disabled value="<%= (values && values.enable_status === 'Y')? "Enable" : "Disabled" %>" />
+                        <input class="form-control" readonly value="<%= (values && values.enable_status === 'Y')? "Enable" : "Disabled" %>" />
                     </div>
 
                 </div>

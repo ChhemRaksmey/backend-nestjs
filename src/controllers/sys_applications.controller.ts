@@ -8,10 +8,11 @@ import { validate } from 'class-validator';
 import { Response } from 'express';
 import { PaginationUtil } from '../utils/pagination.util';
 import { SysApplicationsService } from '../services/sys_applications.service';
+import { SysModulesService } from '../services/sys_modules.service';
 import { ValidateCreate } from '../models/sys_applications.entity';
 
 const routes = {
-  baseurl   : '/sys-applications',
+  baseurl   : '/core-system/applications',
   create    : '/create',
   update    : '/update/:recid',
   view      : '/view/',
@@ -33,18 +34,29 @@ export class SysApplicationsController {
   private readonly pageDscr = "Define all applications under modules and actions of application.";
   private readonly pageSize = 10;
   
-  constructor(private readonly service: SysApplicationsService) {}
+  constructor(
+    private readonly service: SysApplicationsService,
+    private readonly srvModule: SysModulesService
+  ) {}
 
   @Get()
   @Render(views.listing)
   async pageListing(
     @Query('msg') msg?: string,
-    @Query('page') pageParam?: string
+    @Query('page') pageParam?: string,
+    @Query('filter-search') filterSearch?: string,
+    @Query('filter-module') filterModule?: string,
+    @Query('filter-status') filterStatus?: string,
   ) {
+
+    const list_modules = await this.srvModule.getRecords(PaginationUtil.parsePage(pageParam), this.pageSize, '', 'Y');
 
     const records = await this.service.getRecords(
       PaginationUtil.parsePage(pageParam),
       this.pageSize,
+      filterSearch ?? '',
+      filterModule ?? '',
+      filterStatus ?? 'Y',
     );
 
     return PaginationUtil.withData(
@@ -52,14 +64,21 @@ export class SysApplicationsController {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
         baseurl: routes.baseurl,
-        msg: msg
+        msg: msg,
+        list_modules: list_modules,
+        filterSearch: filterSearch ?? '',
+        filterModule: filterModule ?? '',
+        filterStatus: filterStatus ?? 'Y',
       })
     ;
   }
 
   @Get(routes.create)
   @Render(views.create)
-  pageCreate() {
+  async pageCreate(@Query('page') pageParam?: string) {
+
+    const list_modules = await this.srvModule.getRecords(PaginationUtil.parsePage(pageParam), this.pageSize, '', 'Y');
+
     return {
       pageTitle: this.pageTitle,
       pageDscr: this.pageDscr,
@@ -71,6 +90,7 @@ export class SysApplicationsController {
       },
       errors: {},
       msg: '',
+      list_modules: list_modules,
     };
   }
 
@@ -78,6 +98,12 @@ export class SysApplicationsController {
   @Render(views.update)
   async pageUpdate(@Param('recid') recid: string) {
     const record = await this.service.getRecord(recid);
+    const list_modules = await this.srvModule.getRecords(
+      1,
+      this.pageSize,
+      '',
+      'Y',
+    );
     return {
       pageTitle: this.pageTitle,
       pageDscr: this.pageDscr,
@@ -85,6 +111,7 @@ export class SysApplicationsController {
       values: record,
       errors: {},
       msg: '',
+      list_modules,
     };
   }
 
@@ -144,6 +171,12 @@ export class SysApplicationsController {
     }
 
     if (Object.keys(errors).length > 0) {
+      const list_modules = await this.srvModule.getRecords(
+        1,
+        this.pageSize,
+        '',
+        'Y',
+      );
       response.status(422).render(views.create, {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
@@ -151,9 +184,19 @@ export class SysApplicationsController {
         values,
         errors,
         msg: '',
+        list_modules,
       });
       return;
     }
+
+    const recid = `APP.${Date.now()}`;
+    await this.service.create({
+      recid,
+      id_module: String(values.id_module),
+      full_name: String(values.full_name),
+      base_url: String(values.base_url),
+      enable_status: String(values.enable_status),
+    });
 
     response.redirect(routes.baseurl + '?msg=record success created');
     return;
@@ -188,16 +231,28 @@ export class SysApplicationsController {
     }
 
     if (Object.keys(errors).length > 0) {
-      response.status(422).render(views.create, {
+      const list_modules = await this.srvModule.getRecords(1,this.pageSize,'','Y',);
+      response.status(422).render(views.update, {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
         baseurl: routes.baseurl,
-        values,
+        values: {
+          ...values,
+          id_application: recid,
+        },
         errors,
         msg: '',
+        list_modules,
       });
       return;
     }
+
+    await this.service.update(recid, {
+      id_module: String(values.id_module),
+      full_name: String(values.full_name),
+      base_url: String(values.base_url),
+      enable_status: String(values.enable_status),
+    });
 
     response.redirect(routes.baseurl + routes.view + recid);
     return;

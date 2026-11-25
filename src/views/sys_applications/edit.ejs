@@ -1,5 +1,5 @@
 
-<form class="card" method="post" action="<%= baseurl %>/update/<%= values ? values.id_module : '' %>">
+<form class="card" method="post" action="<%= baseurl %>/update/<%= values ? values.id_application : '' %>">
 
     <div class="card-body border-bottom pb-2">
         <div class="d-flex align-items-center">
@@ -53,8 +53,9 @@
                     <div class="mb-3 col-md-3">
                         <label class="form-label mb-1">Main Module</label>
                         <select class="form-select select2" name="id_module">
-                            <option value="Y" <%= values && values.id_module === 'Y' ? 'selected' : '' %>>Module 1</option>
-                            <option value="N" <%= values && values.id_module === 'N' ? 'selected' : '' %>>Module 2</option>
+                            <% list_modules.records.forEach((item) => { %>
+                                <option value="<%= item.id_module %>" <%= values && values.id_module === item.id_module ? 'selected' : '' %>><%= item.full_name %></option>
+                            <% }) %>
                         </select>
                         <% if (errors && errors.id_module) { %><small class="text-danger"><%= errors.id_module[0] %></small><% } %>
                     </div>

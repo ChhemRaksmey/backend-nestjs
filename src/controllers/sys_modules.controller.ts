@@ -11,7 +11,7 @@ import { SysModulesService } from '../services/sys_modules.service';
 import { ValidateCreate } from '../models/sys_modules.entity';
 
 const routes = {
-  baseurl   : '/sys-modules',
+  baseurl   : '/core-system/modules',
   create    : '/create',
   update    : '/update/:recid',
   view      : '/view/',
@@ -39,12 +39,16 @@ export class SysModulesController {
   @Render(views.listing)
   async pageListing(
     @Query('msg') msg?: string,
-    @Query('page') pageParam?: string
+    @Query('page') pageParam?: string,
+    @Query('filter-search') filterSearch?: string,
+    @Query('filter-status') filterStatus?: string,
   ) {
 
     const records = await this.service.getRecords(
       PaginationUtil.parsePage(pageParam),
       this.pageSize,
+      filterSearch ?? '',
+      filterStatus ?? 'Y',
     );
 
     return PaginationUtil.withData(
@@ -52,7 +56,9 @@ export class SysModulesController {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
         baseurl: routes.baseurl,
-        msg: msg
+        msg,
+        filterSearch: filterSearch ?? '',
+        filterStatus: filterStatus ?? 'Y',
       })
     ;
   }
@@ -65,6 +71,7 @@ export class SysModulesController {
       pageDscr: this.pageDscr,
       baseurl: routes.baseurl,
       values: {
+        recid: '',
         full_name: '',
         base_url: '',
         enable_status: 'Y',
@@ -104,7 +111,7 @@ export class SysModulesController {
 
   @Get(routes.authorize)
   @Render(views.authorize)
-  async pageAuthorize(@Param('recid') recid: string,) {
+  async pageAuthorize(@Param('recid') recid: string) {
     const record = await this.service.getRecord(recid);
     return {
       pageTitle: this.pageTitle,
@@ -129,6 +136,7 @@ export class SysModulesController {
     }
 
     const values = {
+      recid         : String(body.recid ?? '').trim(),
       full_name     : body.full_name ?? '',
       base_url      : body.base_url ?? '',
       enable_status : body.enable_status ?? '',
@@ -154,6 +162,13 @@ export class SysModulesController {
       });
       return;
     }
+
+    await this.service.create({
+      recid: String(values.recid),
+      full_name: String(values.full_name),
+      base_url: String(values.base_url),
+      enable_status: String(values.enable_status),
+    });
 
     response.redirect(routes.baseurl + '?msg=record success created');
     return;
@@ -172,6 +187,7 @@ export class SysModulesController {
     }
 
     const values = {
+      recid         : recid,
       full_name     : body.full_name ?? '',
       base_url      : body.base_url ?? '',
       enable_status : body.enable_status ?? '',
@@ -187,7 +203,7 @@ export class SysModulesController {
     }
 
     if (Object.keys(errors).length > 0) {
-      response.status(422).render(views.create, {
+      response.status(422).render(views.update, {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
         baseurl: routes.baseurl,
@@ -197,6 +213,12 @@ export class SysModulesController {
       });
       return;
     }
+
+    await this.service.update(recid, {
+      full_name: String(values.full_name),
+      base_url: String(values.base_url),
+      enable_status: String(values.enable_status),
+    });
 
     response.redirect(routes.baseurl + routes.view + recid);
     return;

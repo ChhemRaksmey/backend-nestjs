@@ -11,7 +11,7 @@ import { SysPrivilegesService } from '../services/sys_privileges.service';
 import { ValidateCreate } from '../models/sys_privileges.entity';
 
 const routes = {
-  baseurl   : '/sys-privileges',
+  baseurl   : '/core-system/privileges',
   create    : '/create',
   update    : '/update/:recid',
   view      : '/view/',
@@ -66,8 +66,12 @@ export class SysPrivilegesController {
       pageTitle: this.pageTitle,
       pageDscr: this.pageDscr,
       baseurl: routes.baseurl,
-      oldvalue: [],
       ...record,
+      oldvalue: {
+        full_name: '',
+        enable_status: 'Y',
+        permission: {},
+      },
       errors: {},
       msg: '',
     };
@@ -83,7 +87,6 @@ export class SysPrivilegesController {
       pageTitle: this.pageTitle,
       pageDscr: this.pageDscr,
       baseurl: routes.baseurl,
-      oldvalue: [],
       ...record,
       errors: {},
       msg: '',
@@ -152,13 +155,20 @@ export class SysPrivilegesController {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
         baseurl: routes.baseurl,
-        oldvalue,
         ...record,
+        oldvalue,
         errors,
         msg: '',
       });
       return;
     }
+
+    await this.service.create(
+      `PRIV.${Date.now()}`,
+      String(values.full_name),
+      String(values.enable_status),
+      body.permission,
+    );
 
     response.redirect(routes.baseurl + '?msg=record success created');
     return;
@@ -199,13 +209,20 @@ export class SysPrivilegesController {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
         baseurl: routes.baseurl,
-        oldvalue,
         ...record,
+        oldvalue,
         errors,
         msg: '',
       });
       return;
     }
+
+    await this.service.update(
+      recid,
+      String(values.full_name),
+      String(values.enable_status),
+      body.permission,
+    );
 
     response.redirect(routes.baseurl + routes.view + recid);
     return;
