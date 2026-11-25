@@ -1,4 +1,4 @@
-import { ViewColumn, ViewEntity } from 'typeorm';
+import { Column, Entity, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
 import {
   IsNotEmpty,
   IsString,
@@ -74,8 +74,8 @@ export class ValidateCreate {
   @IsNotEmpty({ message: 'mandatory Time End' })
   time_end;
   
-  @IsNotEmpty({ message: 'mandatory Default Branch' })
-  id_branch;
+  // @IsNotEmpty({ message: 'mandatory Default Branch' })
+  // id_branch;
 
 }
 
@@ -105,8 +105,8 @@ export class ValidateEdit {
   @IsNotEmpty({ message: 'mandatory Time End' })
   time_end;
   
-  @IsNotEmpty({ message: 'mandatory Default Branch' })
-  id_branch;
+  // @IsNotEmpty({ message: 'mandatory Default Branch' })
+  // id_branch;
 
 }
 
@@ -150,4 +150,27 @@ export class ValidateResetPassword {
   @Validate(PasswordsMatchConstraint)
   ConfirmNewPassword: string;
 
+}
+@Entity({ name: 'sys_users' })
+export class SysUser {
+  @PrimaryColumn({ name: 'recid', type: 'varchar', length: 35 })
+  recid: string;
+
+  @Column({ name: 'json_data', type: 'jsonb', nullable: true })
+  jsonData: Record<string, unknown> | null;
+
+  @Column({ name: 'json_audit', type: 'jsonb', nullable: true })
+  jsonAudit: Record<string, unknown> | null;
+}
+
+@Entity({ name: 'sys_user_password' })
+export class SysUserPassword {
+  @PrimaryColumn({ name: 'recid', type: 'varchar', length: 35 })
+  recid: string;
+
+  @Column({ name: 'json_data', type: 'jsonb', nullable: true })
+  jsonData: Record<string, unknown> | null;
+
+  @Column({ name: 'json_audit', type: 'jsonb', nullable: true })
+  jsonAudit: Record<string, unknown> | null;
 }

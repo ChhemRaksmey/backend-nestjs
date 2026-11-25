@@ -58,7 +58,7 @@
             <% records.forEach((item) => { %>
               <tr>
                 <td class="font-size-12 py-1"><%= item.full_name %></td>
-                <td class="font-size-12 py-1"><%= item.base_url %></td>
+                <td class="font-size-12 py-1"><%= item.branch_type %></td>
                 <td class="font-size-12 py-1 text-center">
                   <% if (item.enable_status === "Y") { %><span class="badge bg-primary">Enable</span></td>
                   <% } else { %><span class="badge bg-danger">Disabled</span></td>
@@ -69,10 +69,10 @@
                       <i class="mdi mdi-file-cog-outline"></i>
                     </a>
                     <div class="dropdown-menu">
-                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/view/<%= item.id_module %>">View</a>
-                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/update/<%= item.id_module %>">Edit</a>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/view/<%= item.id_branch %>">View</a>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/update/<%= item.id_branch %>">Edit</a>
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/authorize/<%= item.id_module %>">Authorize</a>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/authorize/<%= item.id_branch %>">Authorize</a>
                     </div>
                   </div>
                 </td>

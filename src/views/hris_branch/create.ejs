@@ -51,12 +51,9 @@
                 <div class="row">
                     
                     <div class="mb-3 col-md-3">
-                        <label class="form-label mb-1">Main Module</label>
-                        <select class="form-select select2" name="id_module">
-                            <option value="Y" <%= values && values.id_module === 'Y' ? 'selected' : '' %>>Module 1</option>
-                            <option value="N" <%= values && values.id_module === 'N' ? 'selected' : '' %>>Module 2</option>
-                        </select>
-                        <% if (errors && errors.id_module) { %><small class="text-danger"><%= errors.id_module[0] %></small><% } %>
+                        <label class="form-label mb-1">Short Name</label>
+                        <input class="form-control" name="short_name" maxlength="100" value="<%= values ? values.short_name : '' %>" />
+                        <% if (errors && errors.short_name) { %><small class="text-danger"><%= errors.short_name[0] %></small><% } %>
                     </div>
                     
                     <div class="mb-3 col-md-4">
@@ -66,9 +63,9 @@
                     </div>
 
                     <div class="mb-3 col-md-3">
-                        <label class="form-label mb-1">Base URL</label>
-                        <input class="form-control" name="base_url" maxlength="100" value="<%= values ? values.base_url : '' %>" />
-                        <% if (errors && errors.base_url) { %><small class="text-danger"><%= errors.base_url[0] %></small><% } %>
+                        <label class="form-label mb-1">Branch Type</label>
+                        <input class="form-control" name="branch_type" maxlength="100" value="<%= values ? values.branch_type : '' %>" />
+                        <% if (errors && errors.branch_type) { %><small class="text-danger"><%= errors.branch_type[0] %></small><% } %>
                     </div>
                     
                     <div class="mb-3 col-md-2">

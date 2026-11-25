@@ -11,7 +11,7 @@ import { HrisBranchService } from '../services/hris_branch.service';
 import { ValidateCreate } from '../models/hris_branch.entity';
 
 const routes = {
-  baseurl   : '/core-system/applications',
+  baseurl   : '/hris/branch',
   create    : '/create',
   update    : '/update/:recid',
   view      : '/view/',
@@ -65,8 +65,9 @@ export class HrisBranchController {
       pageDscr: this.pageDscr,
       baseurl: routes.baseurl,
       values: {
+        short_name: '',
         full_name: '',
-        base_url: '',
+        branch_type: '',
         enable_status: 'Y',
       },
       errors: {},
@@ -128,9 +129,9 @@ export class HrisBranchController {
     }
 
     const values = {
-      id_module     : body.id_module ?? '',
+      short_name    : body.short_name ?? '',
       full_name     : body.full_name ?? '',
-      base_url      : body.base_url ?? '',
+      branch_type   : body.branch_type ?? '',
       enable_status : body.enable_status ?? '',
     };
     const submitform = plainToInstance(ValidateCreate, values);
@@ -154,6 +155,15 @@ export class HrisBranchController {
       });
       return;
     }
+
+    const recid = `BR.${Date.now()}`;
+    await this.service.create({
+      recid,
+      short_name: String(values.short_name),
+      full_name: String(values.full_name),
+      branch_type: String(values.branch_type),
+      enable_status: String(values.enable_status),
+    });
 
     response.redirect(routes.baseurl + '?msg=record success created');
     return;
@@ -172,9 +182,9 @@ export class HrisBranchController {
     }
 
     const values = {
-      id_module     : body.id_module ?? '',
+      short_name    : body.short_name ?? '',
       full_name     : body.full_name ?? '',
-      base_url      : body.base_url ?? '',
+      branch_type   : body.branch_type ?? '',
       enable_status : body.enable_status ?? '',
     };
     const submitform = plainToInstance(ValidateCreate, values);
@@ -188,16 +198,26 @@ export class HrisBranchController {
     }
 
     if (Object.keys(errors).length > 0) {
-      response.status(422).render(views.create, {
+      response.status(422).render(views.update, {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
         baseurl: routes.baseurl,
-        values,
+        values: {
+          ...values,
+          id_branch: recid,
+        },
         errors,
         msg: '',
       });
       return;
     }
+
+    await this.service.update(recid, {
+      short_name: String(values.short_name),
+      full_name: String(values.full_name),
+      branch_type: String(values.branch_type),
+      enable_status: String(values.enable_status),
+    });
 
     response.redirect(routes.baseurl + routes.view + recid);
     return;

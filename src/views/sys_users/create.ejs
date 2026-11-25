@@ -59,8 +59,9 @@
                     <div class="mb-2 col-md-6">
                         <label class="form-label mb-1">Default Branch</label>
                         <select class="form-select select2" name="id_branch" value="">
-                            <option value="item 1" <%= String(oldvalue.id_branch ?? '') === 'item 1' ? 'selected' : '' %>>item 1</option>
-                            <option value="item 2" <%= String(oldvalue.id_branch ?? '') === 'item 2' ? 'selected' : '' %>>item 2</option>
+                            <% list_branches.forEach((item) => { %>
+                                <option value="<%= item.id_branch %>" <%= String(oldvalue.id_branch ?? '') === item.id_branch ? 'selected' : '' %>><%= item.full_name %></option>
+                            <% }) %>
                         </select>
                         <% if (errors && errors.id_branch) { %><small class="text-danger"><%= errors.id_branch[0] %></small><% } %>
                     </div>
@@ -101,11 +102,9 @@
                         <label class="form-label mb-1">Access Privileges</label>
                         <% const selectedPrivileges = Array.isArray(oldvalue.id_privilege) ? oldvalue.id_privilege.map(String) : [String(oldvalue.id_privilege ?? '')]; %>
                         <select class="select2 form-control select2-multiple" data-placeholder="Choose ..." multiple="multiple" name="id_privilege">
-                            <option value="Privilege 1" <%= selectedPrivileges.includes('Privilege 1') ? 'selected' : '' %>>Privilege 1</option>
-                            <option value="Privilege 2" <%= selectedPrivileges.includes('Privilege 2') ? 'selected' : '' %>>Privilege 2</option>
-                            <option value="Privilege 3" <%= selectedPrivileges.includes('Privilege 3') ? 'selected' : '' %>>Privilege 3</option>
-                            <option value="Privilege 4" <%= selectedPrivileges.includes('Privilege 4') ? 'selected' : '' %>>Privilege 4</option>
-                            <option value="Privilege 5" <%= selectedPrivileges.includes('Privilege 5') ? 'selected' : '' %>>Privilege 5</option>
+                            <% list_privileges.forEach((item) => { %>
+                                <option value="<%= item.id_privilege %>" <%= selectedPrivileges.includes(item.id_privilege) ? 'selected' : '' %>><%= item.full_name %></option>
+                            <% }) %>
                         </select>
                         <% if (errors && errors.id_privilege) { %><small class="text-danger"><%= errors.id_privilege[0] %></small><% } %>
                     </div>

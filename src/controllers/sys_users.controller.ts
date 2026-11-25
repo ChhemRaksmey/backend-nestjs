@@ -8,6 +8,8 @@ import { validate } from 'class-validator';
 import { Response } from 'express';
 import { PaginationUtil } from '../utils/pagination.util';
 import { SysUsersService } from '../services/sys_users.service';
+import { HrisBranchService } from '../services/hris_branch.service';
+import { SysPrivilegesService } from '../services/sys_privileges.service';
 import { ValidateCreate, ValidateEdit, ValidateResetPassword } from '../models/sys_users.entity';
 import { getClientAction, getCheckSubmitRecid, getValidateForm, getFormMianInfo } from '../utils/form_check';
 
@@ -34,7 +36,11 @@ export class SysUsersController {
     baseurl: routes.baseurl,
   };
 
-  constructor(private readonly service: SysUsersService) {}
+  constructor(
+    private readonly service: SysUsersService,
+    private readonly branchService: HrisBranchService,
+    private readonly privilegeService: SysPrivilegesService,
+  ) {}
 
   @Get()
   async submitGet(
@@ -45,7 +51,7 @@ export class SysUsersController {
     @Query('page') pageParam?: string,
   ): Promise<void> {
     switch (action ?? 'listing') {
-      case 'page-create'         : this.pageCreate(response); return;
+      case 'page-create'         : await this.pageCreate(response); return;
       case 'page-update'         : await this.pageUpdate(response, recid); return;
       case 'page-reset-password' : await this.pageResetPassword(response, recid); return;
       case 'page-view'           : await this.pageView(response, recid); return;
@@ -91,18 +97,26 @@ export class SysUsersController {
     );
   }
 
-  private pageCreate(response: Response): void {
+  private async pageCreate(response: Response): Promise<void> {
+    const branches = await this.branchService.getOptions();
+    const privileges = await this.privilegeService.getOptions();
     response.render(views.create, {
       ...getFormMianInfo('', this.pageinfo),
       oldvalue: this.emptyUserValues(),
+      list_branches: branches,
+      list_privileges: privileges,
     });
   }
 
   private async pageUpdate(response: Response, recid?: string): Promise<void> {
     const record = await this.service.getRecord(getCheckSubmitRecid(recid));
+    const branches = await this.branchService.getOptions();
+    const privileges = await this.privilegeService.getOptions();
     response.render(views.update, {
       ...getFormMianInfo('', this.pageinfo),
       oldvalue: record,
+      list_branches: branches,
+      list_privileges: privileges,
     });
   }
 
@@ -149,13 +163,19 @@ export class SysUsersController {
     const errors = await getValidateForm(submitform, ValidateCreate);
 
     if (Object.keys(errors).length > 0) {
+      const branches = await this.branchService.getOptions();
+      const privileges = await this.privilegeService.getOptions();
       response.status(422).render(views.create, {
         ...getFormMianInfo('', this.pageinfo),
         oldvalue: submitform,
         errors,
+        list_branches: branches,
+        list_privileges: privileges,
       });
       return;
     }
+
+    await this.service.create(`U${Date.now()}`, submitform);
 
     response.redirect(routes.baseurl +"?msg=record had been create");
     return;
@@ -186,13 +206,19 @@ export class SysUsersController {
     const oldvalue = { ...submitform, id_user: recid };
 
     if (Object.keys(errors).length > 0) {
+      const branches = await this.branchService.getOptions();
+      const privileges = await this.privilegeService.getOptions();
       response.status(422).render(views.update, {
         ...getFormMianInfo('', this.pageinfo),
         oldvalue,
         errors,
+        list_branches: branches,
+        list_privileges: privileges,
       });
       return;
     }
+
+    await this.service.update(recid, submitform);
 
     response.redirect(`${routes.baseurl}?client-action=page-view&recid=${recid}`);
     return;
@@ -228,6 +254,16 @@ export class SysUsersController {
         errors,
       });
       return;
+    }
+
+    if (body.reset_type === 'ATTEMP.PASSWORD') {
+      await this.service.resetPassword(
+        recid,
+        String(body.NewPassword ?? ''),
+        true,
+      );
+    } else if (body.reset_type === 'ATTEMP') {
+      await this.service.clearAttempts(recid);
     }
 
     response.redirect(`${routes.baseurl}?msg=user had been reseted ${body.full_name}`);

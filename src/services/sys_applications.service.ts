@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, QueryFailedError, Repository } from 'typeorm';
 import { PaginationData, PaginationUtil } from '../utils/pagination.util';
-import { SysApplicationsView } from '../models/sys_applications.entity';
+import { SysApplication, SysApplicationsView } from '../models/sys_applications.entity';
 
 export interface CustomerPage extends PaginationData {
   records: SysApplicationsView[];
@@ -16,20 +16,57 @@ export class SysApplicationsService {
   constructor(
     @InjectRepository(SysApplicationsView)
     private readonly mdlView: Repository<SysApplicationsView>,
+    @InjectRepository(SysApplication)
+    private readonly mdlTable: Repository<SysApplication>,
   ) {}
 
-  async getRecords(page: number, pageSize: number): Promise<CustomerPage> {
+  async getRecords(
+      page: number,
+      pageSize: number,
+      filterSearch = '',
+      filterModule = '',
+      filterStatus = 'Y',
+    ): Promise<CustomerPage> {
 
-    const total      = await this.mdlView.count();
-    const pagination = PaginationUtil.create(page, pageSize, total);
-    const records  = await this.mdlView.find({
-      order: { full_name: 'ASC' },
-      skip: pagination.skip,
-      take: pageSize,
-    });
+      const id_module = filterModule.trim();
+      const search    = filterSearch.trim();
+      const status    = filterStatus.trim();
   
-    return PaginationUtil.withData(pagination, { records });
-  }
+      const createFilteredQuery = () => {
+        const qusery = this.mdlView.createQueryBuilder('records');
+  
+        if (id_module) {
+          qusery.andWhere('records.id_module = :id_module', { id_module });
+        }
+
+        if (status) {
+          qusery.andWhere('records.enable_status = :status', { status });
+        }
+  
+        if (search) {
+          const searchValue = `%${search}%`;
+          qusery.andWhere(new Brackets((where) => {
+            where
+              .where('records.id_application = :exactSearch', { exactSearch: search })
+              .orWhere('records.full_name ILIKE :search', { search: searchValue })
+              .orWhere('records.base_url ILIKE :search', { search: searchValue });
+          }));
+        }
+  
+        return qusery;
+      };
+  
+      const total = await createFilteredQuery().getCount();
+      const pagination = PaginationUtil.create(page, pageSize, total);
+      const records = await createFilteredQuery()
+        .orderBy('records.full_name', 'ASC')
+        .skip(pagination.skip)
+        .take(pageSize)
+        .getMany()
+      ;
+    
+      return PaginationUtil.withData(pagination, { records });
+    }
 
   async getSidebarItems(): Promise<SysApplicationsView[]> {
     if (this.sidebarItems !== undefined) {
@@ -64,11 +101,59 @@ export class SysApplicationsService {
   }
 
   async getRecord(recid: string): Promise<SysApplicationsView> {
-    const customer = await this.mdlView.findOneBy({ id_module: recid });
+    const customer = await this.mdlView.findOneBy({ id_application: recid });
     if (!customer) {
       throw new NotFoundException(`record not found!`);
     }
     return customer;
+  }
+
+  async create(data: {
+    recid: string;
+    id_module: string;
+    full_name: string;
+    base_url: string;
+    enable_status: string;
+  }): Promise<SysApplication> {
+    const existing = await this.mdlTable.findOneBy({ recid: data.recid });
+    if (existing) {
+      throw new ConflictException(`Record ${data.recid} already exists`);
+    }
+
+    return this.mdlTable.save(this.mdlTable.create({
+      recid: data.recid,
+      jsonData: {
+        recid: data.recid,
+        c1: data.id_module,
+        c2: data.full_name,
+        c3: data.base_url,
+        c4: [],
+        c5: data.enable_status,
+      },
+      jsonAudit: null,
+    }));
+  }
+
+  async update(recid: string, data: {
+    id_module: string;
+    full_name: string;
+    base_url: string;
+    enable_status: string;
+  }): Promise<SysApplication> {
+    const record = await this.mdlTable.findOneBy({ recid });
+    if (!record) {
+      throw new NotFoundException(`Record ${recid} not found`);
+    }
+
+    record.jsonData = {
+      recid,
+      c1: data.id_module,
+      c2: data.full_name,
+      c3: data.base_url,
+      c4: Array.isArray(record.jsonData?.c4) ? record.jsonData.c4 : [],
+      c5: data.enable_status,
+    };
+    return this.mdlTable.save(record);
   }
   
 }

@@ -16,34 +16,36 @@
     </div>
 
     <div class="card-body">
-      <% if (total) { %>
 
-        <form class="card-body border-bottom pt-1" method="get" action="<%= baseurl %>">
-          <div class="row g-3 justify-content-center">
-            <div class="col-lg-4">
-              <input class="form-control" placeholder="Search for ..." />
-            </div>
-            <div class="col-lg-4">
-              <select class="form-select select2">
-                <option value="" selected>All Modules</option>
-                <option value="Module 1">Module 1</option>
-                <option value="Module 2">Module 2</option>
-              </select>
-            </div>
-            <div class="col-lg-2">
-              <select class="form-select select2">
-                <option value="" selected>All Status</option>
-                <option value="Y">Enable</option>
-                <option value="N">Disabled</option>
-              </select>
-            </div>
-            <div class="col-lg-2">
-              <button class="btn btn-soft-secondary w-100" type="submit">
-                <i class="mdi mdi-filter-outline align-middle"></i>Filter
-              </button>
-            </div>
+      <form class="card-body border-bottom pt-1" method="get" action="<%= baseurl %>">
+        <div class="row g-3 justify-content-center">
+          <div class="col-lg-4">
+            <input class="form-control" placeholder="Search for ..." name="filter-search" value="<%= filterSearch %>" />
           </div>
-        </form>
+          <div class="col-lg-4">
+            <select class="form-select select2" name="filter-module">
+              <option value="" <%= filterModule === '' ? 'selected' : '' %>>All Modules</option>
+              <% list_modules.records.forEach((item) => { %>
+                <option value="<%= item.id_module %>" <%= filterModule === item.id_module ? 'selected' : '' %>><%= item.full_name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-lg-2">
+            <select class="form-select select2" name="filter-status">
+              <option value="" <%= filterStatus === '' ? 'selected' : '' %>>All Status</option>
+              <option value="Y" <%= filterStatus === 'Y' ? 'selected' : '' %>>Enable</option>
+              <option value="N" <%= filterStatus === 'N' ? 'selected' : '' %>>Disabled</option>
+            </select>
+          </div>
+          <div class="col-lg-2">
+            <button class="btn btn-soft-secondary w-100" type="submit">
+              <i class="mdi mdi-filter-outline align-middle"></i>Filter
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <% if (total) { %>
 
         <table class="table table-striped align-middle dt-responsive nowrap w-100 table-check" id="job-list">
           <thead>
@@ -69,10 +71,10 @@
                       <i class="mdi mdi-file-cog-outline"></i>
                     </a>
                     <div class="dropdown-menu">
-                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/view/<%= item.id_module %>">View</a>
-                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/update/<%= item.id_module %>">Edit</a>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/view/<%= item.id_application %>">View</a>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/update/<%= item.id_application %>">Edit</a>
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/authorize/<%= item.id_module %>">Authorize</a>
+                      <a class="dropdown-item font-size-12" href="<%= baseurl %>/authorize/<%= item.id_application %>">Authorize</a>
                     </div>
                   </div>
                 </td>
@@ -89,6 +91,7 @@
           <p>Add first module to get start</p>
         </div>
       <% } %>
+
     </div>
 
   </div>

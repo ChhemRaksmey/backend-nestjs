@@ -1,4 +1,4 @@
-import { ViewColumn, ViewEntity } from 'typeorm';
+import { Column, Entity, PrimaryColumn, ViewColumn, ViewEntity } from 'typeorm';
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 @ViewEntity({ name: 'vw_sys_applications', synchronize: false })
@@ -42,5 +42,17 @@ export class ValidateCreate {
   @IsNotEmpty({ message: 'Status can not be empty' })
   enable_status: string;
 
+}
+
+@Entity({ name: 'sys_applications' })
+export class SysApplication {
+  @PrimaryColumn({ name: 'recid', type: 'varchar', length: 35 })
+  recid: string;
+
+  @Column({ name: 'json_data', type: 'jsonb', nullable: true })
+  jsonData: Record<string, unknown> | null;
+
+  @Column({ name: 'json_audit', type: 'jsonb', nullable: true })
+  jsonAudit: Record<string, unknown> | null;
 }
 

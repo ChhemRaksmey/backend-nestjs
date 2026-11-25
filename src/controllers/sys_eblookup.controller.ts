@@ -8,7 +8,7 @@ import { validate } from 'class-validator';
 import { Response } from 'express';
 import { PaginationUtil } from '../utils/pagination.util';
 import { SysEBLookUpService } from '../services/sys_eblookup.service';
-import { ValidateCreate } from '../models/sys_applications.entity';
+import { ValidateCreate } from '../models/sys_eblookup.entity';
 
 const routes = {
   baseurl   : '/core-system/eb-lookup',
@@ -39,12 +39,16 @@ export class SysEBLookUpController {
   @Render(views.listing)
   async pageListing(
     @Query('msg') msg?: string,
-    @Query('page') pageParam?: string
+    @Query('page') pageParam?: string,
+    @Query('filter-search') filterSearch?: string,
+    @Query('filter-status') filterStatus?: string,
   ) {
 
     const records = await this.service.getRecords(
       PaginationUtil.parsePage(pageParam),
       this.pageSize,
+      filterSearch ?? '',
+      filterStatus ?? 'Y',
     );
 
     return PaginationUtil.withData(
@@ -52,7 +56,9 @@ export class SysEBLookUpController {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
         baseurl: routes.baseurl,
-        msg: msg
+        msg,
+        filterSearch: filterSearch ?? '',
+        filterStatus: filterStatus ?? 'Y',
       })
     ;
   }
@@ -65,8 +71,8 @@ export class SysEBLookUpController {
       pageDscr: this.pageDscr,
       baseurl: routes.baseurl,
       values: {
-        full_name: '',
-        base_url: '',
+        item_link: '',
+        item_narrative: '',
         enable_status: 'Y',
       },
       errors: {},
@@ -128,9 +134,8 @@ export class SysEBLookUpController {
     }
 
     const values = {
-      id_module     : body.id_module ?? '',
-      full_name     : body.full_name ?? '',
-      base_url      : body.base_url ?? '',
+      item_link     : body.item_link ?? '',
+      item_narrative: body.item_narrative ?? '',
       enable_status : body.enable_status ?? '',
     };
     const submitform = plainToInstance(ValidateCreate, values);
@@ -154,6 +159,14 @@ export class SysEBLookUpController {
       });
       return;
     }
+
+    const recid = `EB.${Date.now()}`;
+    await this.service.create({
+      recid,
+      item_link: String(values.item_link),
+      item_narrative: String(values.item_narrative),
+      enable_status: String(values.enable_status),
+    });
 
     response.redirect(routes.baseurl + '?msg=record success created');
     return;
@@ -172,9 +185,8 @@ export class SysEBLookUpController {
     }
 
     const values = {
-      id_module     : body.id_module ?? '',
-      full_name     : body.full_name ?? '',
-      base_url      : body.base_url ?? '',
+      item_link     : body.item_link ?? '',
+      item_narrative: body.item_narrative ?? '',
       enable_status : body.enable_status ?? '',
     };
     const submitform = plainToInstance(ValidateCreate, values);
@@ -188,16 +200,25 @@ export class SysEBLookUpController {
     }
 
     if (Object.keys(errors).length > 0) {
-      response.status(422).render(views.create, {
+      response.status(422).render(views.update, {
         pageTitle: this.pageTitle,
         pageDscr: this.pageDscr,
         baseurl: routes.baseurl,
-        values,
+        values: {
+          ...values,
+          id_item: recid,
+        },
         errors,
         msg: '',
       });
       return;
     }
+
+    await this.service.update(recid, {
+      item_link: String(values.item_link),
+      item_narrative: String(values.item_narrative),
+      enable_status: String(values.enable_status),
+    });
 
     response.redirect(routes.baseurl + routes.view + recid);
     return;
